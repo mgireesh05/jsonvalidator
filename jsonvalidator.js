@@ -1,5 +1,6 @@
 var request = require('request');
 var fs = require('fs');
+var BufferBuilder = require('buffer-builder');
 var tempFile = "temp.html";
 
 var extractJSON = function() {
@@ -10,17 +11,35 @@ var extractJSON = function() {
 
    var lineNos = [];
    var lineNumber = 0;
+   var jsonStart = false;
+   var jsonBuf;
 
    rl.on('line', function(line) {
       lineNumber++;
-      if ((-1 != line.indexOf('{')) || (-1 != line.indexOf('['))) {
+      if ((!jsonStart) && (-1 != line.indexOf('['))) {
+         jsonStart = true;
+         jsonBuf = new BufferBuilder();
+      }
+      if (jsonStart) {
+         jsonBuf.appendString(line);
          lineNos.push(lineNumber);
+         if ((line.indexOf(']') >= 0)) {
+            jsonStart = false;
+            var jsonObj = jsonBuf.get().toString();
+            try {
+               var json = JSON.parse(jsonObj);
+               console.info("====Valid Json====");
+               console.info(json);
+               console.info("==================");
+            } catch (e) {
+               console.error("Invalid JSON: ", e);
+            }
+         }
       }
    });
 
    rl.on('close', function() {
-      console.info("Potential JSON objects at lines: ", lineNos);
-      console.info("Total = ", lineNos.length);
+      console.info("Done!");
    });
 };
 
