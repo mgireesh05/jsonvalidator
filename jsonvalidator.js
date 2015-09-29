@@ -9,37 +9,57 @@ var extractJSON = function() {
       input: require('fs').createReadStream(tempFile)
    });
 
-   var lineNos = [];
    var lineNumber = 0;
    var jsonStart = false;
    var jsonBuf;
+   var validJsonCount = 0;
+   var invalidJsonCount = 0;
+   var endChar = null;
 
    rl.on('line', function(line) {
       lineNumber++;
-      if ((!jsonStart) && (-1 != line.indexOf('['))) {
-         jsonStart = true;
-         jsonBuf = new BufferBuilder();
+      if (!jsonStart) {
+         var startChar1 = line.indexOf('[');
+         var startChar2 = line.indexOf('{');
+         if ((startChar1 >= 0) || (startChar2 >= 0)) {
+            if (startChar1 >= 0) {
+               endChar = ']';
+            } else if (startChar2 >= 0) {
+               endChar = '}';
+            } else {
+               endChar = ((endChar1 < endChar2) ? ']' : '}');
+            }
+         }
+         if (endChar) {
+            jsonStart = true;
+            jsonBuf = new BufferBuilder();
+            console.info("start:", lineNumber);
+         }
       }
+
       if (jsonStart) {
          jsonBuf.appendString(line);
-         lineNos.push(lineNumber);
-         if ((line.indexOf(']') >= 0)) {
+         if ((line.indexOf(endChar) >= 0)) {
             jsonStart = false;
+            endChar = null;
+            console.info("end:", lineNumber);
             var jsonObj = jsonBuf.get().toString();
             try {
                var json = JSON.parse(jsonObj);
                console.info("====Valid Json====");
                console.info(json);
+               validJsonCount++;
                console.info("==================");
             } catch (e) {
-               console.error("Invalid JSON: ", e);
+               console.error("Invalid JSON: ", e, lineNumber);
+               invalidJsonCount++;
             }
          }
       }
    });
 
    rl.on('close', function() {
-      console.info("Done!");
+      console.info("Done!, Valid = ", validJsonCount, "invalid = ", invalidJsonCount);
    });
 };
 
