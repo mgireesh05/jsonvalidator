@@ -42,6 +42,7 @@ def preprocess(filename):
                 w.write('\n')
         else:
             w.write(line)
+    w.close()
     f.close()
 
 
