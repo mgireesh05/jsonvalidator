@@ -1,3 +1,7 @@
 # jsonvalidator
-This is different from standard json validators. This tool will help to automate a REST API documentation page to keep valid JSON documents. 
-Extracts JSON content from a static webpage, validates, and generates a report - work in progress
+As expected, this validates the JSON response from a REST API. 
+Plus, this may be used to validate the JSON content in your REST API documentation page as well.
+
+# Usage
+	1. Set the URL to be validated though "inputUrl" in config.json
+	2. Run $node jsonvalidator.js

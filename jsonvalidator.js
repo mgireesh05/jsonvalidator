@@ -5,6 +5,7 @@ var writeFile = "write.html";
 var PythonShell = require('python-shell');
 var tempFile = 'temp.html';
 var chalk = require('chalk');
+var config = require('./config');
 
 var MAX_FILE_SZ = (100 * 1024 * 1024);
 
@@ -16,6 +17,7 @@ var processUrl = function(url) {
         fs.stat(tempFile, function(err, stats) {
             if (stats.size > MAX_FILE_SZ) {
                 console.error("File too big, aborting!");
+                fs.unlinkSync(tempFile);
                 return;
             }
             var options = {
@@ -40,13 +42,13 @@ var processUrl = function(url) {
             });
 
             shell.on('close', function() {
-                console.info("Total:: ", chalk.green("Valid: ", validJsonCount), chalk.red(" Invalid: ", invalidJsonCount));
+                console.info("Total:: ", chalk.green("Valid: ", validJsonCount),
+                    chalk.red(" Invalid: ", invalidJsonCount));
+                fs.unlinkSync(tempFile);
             });
         });
     }));
 };
 
 
-var url = "https://github.com/docker/docker/blob/master/docs/reference/api/docker_remote_api_v1.0.md";
-
-processUrl(url);
+processUrl(config.get("inputUrl"));

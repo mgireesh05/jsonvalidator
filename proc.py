@@ -4,6 +4,7 @@
 import sys
 import json
 import re
+import os
 
 
 def main(argv):
@@ -92,5 +93,6 @@ def extractJson():
         print jsonStr
 
     f.close()
+    os.remove("preprocessed.html")
 
 main(sys.argv)
