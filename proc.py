@@ -60,19 +60,18 @@ def extractJson():
         lineNumber += 1
 
         if jsonStartChar:
+            jsonObj.append(line.rstrip())
             if jsonStartChar in line:
                 jsonStart.append(jsonStartChar)
             elif jsonEndChar in line:
                 if jsonStart:
                     jsonStart.pop()
                 else:
-                    jsonObj.append(line.rstrip())
                     jsonObjs.append(jsonObj)
                     jsonObj = []
                     jsonStartChar = ""
                     jsonEndChar = ""
-            else:
-                jsonObj.append(line.rstrip())
+
         else:
             if '[' in line:
                 jsonStartChar = '['
