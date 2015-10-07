@@ -1,6 +1,6 @@
 # jsonvalidator
 As expected, this validates the JSON response from a REST API. 
-Plus, this may be used to validate the JSON content in your REST API documentation page as well.
+This can also extract JSON objects from a static web page containing REST API documentation and validate that as well.
 
 # Usage
 	1. Set the URL to be validated though "inputUrl" in config.json
